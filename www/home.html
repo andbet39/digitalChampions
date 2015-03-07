@@ -1,0 +1,21 @@
+    <ion-view title="Digital Champions" hide-back-button="true">
+        <ion-content class="padding" scroll="false" ng-controller="homeController">
+                <div class="row row-top">
+      <input type="text" class = "msg_input" placeholder="Il tuo messaggio">
+        </div>
+                <h2 class="title">SEGNALA UN</h2>
+
+        <div class="row row-center">
+        <div class="col col-50">
+        <img  class="btn_sengnala fail"  ng-click="openModal('Epic Win')" src="img/btn_fail.png">
+        </div>
+        <div class="col col-50">
+        <img class="btn_sengnala win" ng-click="openModal('Epic Fail')"src="img/btn_win.png">
+         </div>
+
+        </div> <h2 class="title">DIGITALE</h2>
+
+        <img class="btn_logo" ng-click="openModal('Epic Fail')"src="img/logo.png">
+        
+         </ion-content>
+    </ion-view>
