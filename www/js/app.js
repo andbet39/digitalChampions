@@ -15,6 +15,7 @@ var app = angular.module('starter', ['ionic', 'ngCordova'])
       }
     });
   });
+  
 app.config(function($stateProvider, $urlRouterProvider,$compileProvider) {
 
   $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|file|blob|content):|data:image\//);

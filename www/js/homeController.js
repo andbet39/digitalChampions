@@ -1,51 +1,113 @@
-app.controller("homeController", function($scope, $ionicModal, $cordovaCamera,$cordovaSocialSharing) {
+
+
+
+app.controller("homeController", function($scope, $ionicModal, $cordovaCamera, $cordovaSocialSharing,$timeout,$ionicActionSheet) {
   console.log("Home controller");
 
+  $scope.frase = "";
+  $scope.stampURL = "";
+  $scope.sourceType=null;
 
-   $scope.shareAnywhere = function() {
+   $scope.apriCamera = function(info) {
 
-      var canvas = document.getElementById('photoCanvas');
-      var context = canvas.getContext('2d');
+   // Show the action sheet
+   var hideSheet = $ionicActionSheet.show({
+     buttons: [
+       { text: 'Camera' },
+       { text: 'Telefono' }
+     ],
+     titleText: 'Seleziona sorgente',
+     cancelText: 'Cancel',
+     cancel: function() {
+               hideSheet();
+        },
+     buttonClicked: function(index) {
+      if (index==0){
+       $scope.sourceType=1; 
+      hideSheet();
 
-      var image = canvas.toDataURL('image/png');
-      console.log(image);
-        $cordovaSocialSharing.share("This is your message", "This is your subject", image, "http://blog.nraboy.com");
-    }
+       $scope.startPhoto(info);
+
+      }
+      if (index==1){
+        $scope.sourceType=0; 
+            hideSheet();
+
+       $scope.startPhoto(info);
+
+     }
+   }
+   });
+
+  
+
+ };
+
+
+  $scope.shareAnywhere = function() {
+
+
+     var image = $scope.finalImg;
+     $cordovaSocialSharing.share($scope.frase, $scope.subject, image, "http://digitalchampions.it");
+  }
 
 
   $scope.drawPic = function() {
+    
     var canvas = document.getElementById('photoCanvas');
-    var context = canvas.getContext('2d');
-    var imageObj = new Image();
-    
-    imageObj.src = 'http://placehold.it/1080x1920/226622/000000';
-    
+      var context = canvas.getContext('2d');
+      context.clearRect(0, 0, canvas.width, canvas.height);
 
-    console.log("offsetWidth :" + canvas.offsetWidth);
-    console.log("offsetHeight:" + canvas.offsetHeight);
-    
+      var imageObj = new Image();
+      imageObj.src = 'img/960.jpg';
+
+      var stampImg = new Image();
+      stampImg.src = $scope.stampURL;
+
     imageObj.onload = function() {
-      context.drawImage(imageObj, 0, 0, imageObj.width, imageObj.height, // source rectangle
-        0, 0, canvas.width, canvas.height);
-
-        var ratio = canvas.width/imageObj.width;
-        var stampImg = new Image();
-        stampImg.src = 'img/epicFail.gif';
+      
+       
+        context.drawImage(imageObj, 0, 0, imageObj.width, imageObj.height, // source rectangle
+                                    0, 0, canvas.width, canvas.height);
+      
+        var ratio = canvas.width / imageObj.width;
+     
         console.log("ratio :" + ratio);
-          stampImg.onload = function() {
-            console.log("stampWidth :" + stampImg.width);
-            console.log("stampHeight:" + stampImg.height);
 
-            stampsizew = stampImg.width*ratio*2;
-            stampsizeh = stampImg.height*ratio*2;
+        console.log("stampWidth :" + stampImg.width);
+        console.log("stampHeight:" + stampImg.height);
 
-            context.drawImage(stampImg,(canvas.offsetWidth/2-stampsizew/2),
-                                       (canvas.offsetHeight*0.8-stampsizeh/2),stampsizew,stampsizeh);
-          }
-          context.font = "48px serif";
+        stampsizew = stampImg.width * ratio * 2;
+        stampsizeh = stampImg.height * ratio * 2;
 
-          context.fillText($scope.frase, 10, 50);
-    };
+        context.drawImage(stampImg, (canvas.offsetWidth * 0.75 - stampsizew / 2), (canvas.offsetHeight * logopH - stampsizeh / 2), stampsizew, stampsizeh);
+
+        context.font = "100px impact";
+        textWidth = context.measureText($scope.frase).width;
+
+        if (textWidth > canvas.offsetWidth) {
+          context.font = "60px impact";
+        }
+
+
+        context.textAlign = 'center';
+        context.fillStyle = 'white';
+
+        wrapText(context, $scope.frase, canvas.offsetWidth / 2, canvas.offsetHeight * txtpH, canvas.offsetWidth - 20, 65);
+
+
+        var imgURI= canvas.toDataURL("image/jpeg");
+
+       $timeout( function(){ 
+
+        $scope.finalImg = imgURI;
+
+
+       }, 500);
+
+    }
+
+
   }
 
 
@@ -57,11 +119,31 @@ app.controller("homeController", function($scope, $ionicModal, $cordovaCamera,$c
     $scope.modal = modal;
   });
 
-  $scope.openModal = function(info) {
-    $scope.frase = info;
+
+  $scope.startPhoto  = function(info){
+
+    if (info == 'win') {
+      $scope.stampURL = 'img/btn_win.png';
+      $scope.subject = "#EPIC WIN"
+    }
+    if (info == 'fail') {
+      $scope.stampURL = 'img/btn_fail.png';      
+      $scope.subject = "#EPIC FAIL"
+
+
+    }
+
+        $scope.takePicture();
+
+
+  }
+
+  $scope.openModal = function() {
+
     $scope.modal.show();
     $scope.resizeCanvas();
-    $scope.takePicture();
+
+
   };
   $scope.closeModal = function() {
     $scope.modal.hide();
@@ -79,69 +161,106 @@ app.controller("homeController", function($scope, $ionicModal, $cordovaCamera,$c
     // Execute action
   });
 
- 
-  $scope.resizeCanvas= function() {
-        var canvasPad = document.getElementById('photoCanvas');
 
-                    var ratio = 1;//window.devicePixelRatio || 1;
-                    canvasPad.width = canvasPad.offsetWidth * ratio;
-                    canvasPad.height = canvasPad.offsetHeight * ratio;
-                    canvasPad.getContext("2d").scale(ratio, ratio);
-                };
+  $scope.resizeCanvas = function() {
+    var canvasPad = document.getElementById('photoCanvas');
+    var ratio = 1; //window.devicePixelRatio || 1;
+    canvasPad.width = imgW; // canvasPad.offsetWidth * ratio;
+    canvasPad.height = imgH; //canvasPad.offsetHeight * ratio;
+
+
+
+    canvasPad.getContext("2d").scale(ratio, ratio);
+  };
 
 
 
   $scope.takePicture = function() {
     console.log("Take picture");
-    
-    var options = {
-      quality: 75,
-      destinationType: Camera.DestinationType.DATA_URL,
-      sourceType: 2, //Camera.PictureSourceType.CAMERA,//Camera.PictureSourceType.LIBRARY,
-      allowEdit: false,
-      encodingType: Camera.EncodingType.JPEG,
-      targetWidth: 1080,
-      targetHeight: 1920,
-      popoverOptions: CameraPopoverOptions,
-      saveToPhotoAlbum: false
-    };
+    if(false){
+      $scope.openModal();
+    }else{
 
-    $cordovaCamera.getPicture(options).then(function(imageData) {
-      $scope.imgURI = "data:image/jpeg;base64," + imageData;
-      var canvas = document.getElementById('photoCanvas');
-      var context = canvas.getContext('2d');
-      context.clearRect(0, 0, canvas.width, canvas.height);
+        $scope.openModal();
+        $scope.finalImg=null;
+        
 
-      var imageObj = new Image();
-      imageObj.src = "data:image/jpeg;base64," + imageData;
-      imageObj.onload = function() {
-          context.drawImage(imageObj, 0, 0, imageObj.width, imageObj.height, // source rectangle
-                                      0, 0, canvas.width, canvas.height);
-        var ratio = canvas.width/imageObj.width;
-        var stampImg = new Image();
-        stampImg.src = 'img/epicFail.gif';
-        console.log("ratio :" + ratio);
-          stampImg.onload = function() {
+        var options = {
+          quality: 75,
+          destinationType: Camera.DestinationType.DATA_URL,
+          sourceType: $scope.sourceType, //Camera.PictureSourceType.CAMERA,//Camera.PictureSourceType.LIBRARY,
+          allowEdit: false,
+          encodingType: Camera.EncodingType.JPEG,
+          targetWidth: imgW,
+          targetHeight: imgH,
+          popoverOptions: CameraPopoverOptions,
+          saveToPhotoAlbum: true
+        };
+
+
+        
+        $cordovaCamera.getPicture(options).then(function(imageData) {
+          var imageURI= "data:image/jpeg;base64," + imageData;
+
+
+          var canvas = document.getElementById('photoCanvas');
+          var context = canvas.getContext('2d');
+          context.clearRect(0, 0, canvas.width, canvas.height);
+
+          var imageObj = new Image();
+          imageObj.src = imageURI;
+
+          var stampImg = new Image();
+          stampImg.src = $scope.stampURL;
+
+          imageObj.onload = function() {
+          
+           
+            context.drawImage(imageObj, 0, 0, imageObj.width, imageObj.height, // source rectangle
+                                        0, 0, canvas.width, canvas.height);
+          
+            var ratio = canvas.width / imageObj.width;
+         
+            console.log("ratio :" + ratio);
+
             console.log("stampWidth :" + stampImg.width);
             console.log("stampHeight:" + stampImg.height);
 
-            stampsizew = stampImg.width*ratio*2;
-            stampsizeh = stampImg.height*ratio*2;
+            stampsizew = stampImg.width * ratio * 2;
+            stampsizeh = stampImg.height * ratio * 2;
 
-            context.drawImage(stampImg,(canvas.offsetWidth/2-stampsizew/2),
-                                       (canvas.offsetHeight*0.8-stampsizeh/2),stampsizew,stampsizeh);
-          }
-          context.font = "48px serif";
+            context.drawImage(stampImg, (canvas.offsetWidth * 0.75 - stampsizew / 2), (canvas.offsetHeight * logopH - stampsizeh / 2), stampsizew, stampsizeh);
 
-          context.fillText($scope.frase, 10, 50);
+            context.font = "100px impact";
+            textWidth = context.measureText($scope.frase).width;
 
-      };
+            if (textWidth > canvas.offsetWidth) {
+              context.font = "60px impact";
+            }
 
-      
 
+            context.textAlign = 'center';
+            context.fillStyle = 'white';
+
+            wrapText(context, $scope.frase, canvas.offsetWidth / 2, canvas.offsetHeight * txtpH, canvas.offsetWidth - 20, 65);
+
+
+            var imgURI= canvas.toDataURL("image/jpeg");
+
+           $timeout( function(){ 
+            $scope.finalImg = imgURI;
+
+
+           }, 500);
+
+        }
     }, function(err) {
-      // An error occured. Show a message to the user
+
     });
+    }
   }
 
+
 });
+
+

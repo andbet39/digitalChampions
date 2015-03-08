@@ -1,13 +1,21 @@
-    <ion-view >
-     <ion-content  scroll="false">
-         <div class="image-modal transparent">
-         	<canvas class="fullscreen-image canvas" id='photoCanvas' ></canvas>
-     	</div>
-    <ion-footer-bar>
-        <div class="button-bar">
-          <button class="button button-dark button-clear" ng-click="shareAnywhere()">Share</button>
-          <button class="button button-dark button-clear" ng-click="closeModal()">Nuovo</button>
-        </div>
+<div class="bar bar-header bar-light">
+  <h1 class="title">DIGITAL CHAMPIONS</h1>
+</div><ion-view >
 
-        </ion-content>
-    </ion-view>
+<ion-content  scroll="false">
+<img ng-show="finalImg !== null" ng-src="{{finalImg}}" class="fullscreen-image" >
+<img ng-show="finalImg === null" ng-src="img/960.png" class="fullscreen-image">
+
+<!--   <img ng-show="imgVis" ng-src="{{finalImg}}" class="fullscreen-image">
+<img ng-hide="imgVis" ng-src="/img/960.png" class="fullscreen-image">
+-->
+</div>
+<ion-footer-bar class="foot_bar">
+<div class="button-bar">
+  <button class="button button-dark button-clear" ng-click="shareAnywhere()">Share</button>
+  <button class="button button-dark button-clear" ng-click="closeModal()">Nuovo</button>
+  <button class="button button-dark button-clear" ng-click="drawPic()">Test</button>
+</div>
+</ion-content>
+</ion-view>
+<canvas  id='photoCanvas' ></canvas>

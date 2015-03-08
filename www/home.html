@@ -1,21 +1,26 @@
-    <ion-view title="Digital Champions" hide-back-button="true">
+    <ion-view title="DIGITAL CHAMPIONS" hide-back-button="true">
+    <div class="bar bar-header bar-light">
+  <h1 class="title">bar-light</h1>
+</div>
         <ion-content class="padding" scroll="false" ng-controller="homeController">
-                <div class="row row-top">
-      <input type="text" class = "msg_input" placeholder="Il tuo messaggio">
-        </div>
+      
+        <img ui-sref="about" class="btn_logo"  src="img/logo.png">
+        <div class="row">
+                 <input type="text" class = "msg_input" ng-model = "frase" placeholder="SCRIVI IL TUO MESSAGGIO">
+        </div>  
+
                 <h2 class="title">SEGNALA UN</h2>
 
         <div class="row row-center">
         <div class="col col-50">
-        <img  class="btn_sengnala fail"  ng-click="openModal('Epic Win')" src="img/btn_fail.png">
+        <img  class="btn_sengnala fail"  ng-click="apriCamera('fail')" src="img/btn_fail.png">
         </div>
         <div class="col col-50">
-        <img class="btn_sengnala win" ng-click="openModal('Epic Fail')"src="img/btn_win.png">
+        <img class="btn_sengnala win" ng-click="apriCamera('win')" src="img/btn_win.png">
          </div>
 
         </div> <h2 class="title">DIGITALE</h2>
-
-        <img class="btn_logo" ng-click="openModal('Epic Fail')"src="img/logo.png">
+   
         
          </ion-content>
     </ion-view>
